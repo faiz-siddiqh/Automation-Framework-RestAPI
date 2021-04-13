@@ -1,0 +1,35 @@
+<elements>
+
+
+	<!-- Common  -->
+
+	<element name="Header-Name" locator="Content-Type"/>		
+	<element name="Header-Value" locator="application/json"/>
+	<element name="Header-Value-Attachments" locator="multipart/form-data"/>
+	
+	<!-- Jira -->
+	
+	
+	<element name="Jira-CreateSession-StatusCode" locator="200"/>
+	<element name="Jira-CreateSession-post" locator="/rest/auth/1/session"/>
+	<element name="homepage-Risks" locator="//a[@id='LOCK_Risks']"/>
+		
+	
+
+	
+	
+	<element name="Riskpage-Search-Input" locator="//input[@id='searchTextBox-inputEl']"/>
+	<element name="Riskpage-Search-Button" locator="//span[@id='searchButton-btnIconEl']"/>
+	<element name="Riskpage-AddRisk-Btn" locator="//*[contains(@id,'KEY_BUTTON_Add')]"/>	
+	<element name="Riskpage-SelectRisk" locator="//div[contains(text(),'Risk')]"/>
+	
+	
+	<element name="Riskpage-SelectDate-Month" locator="//select[@class='ui-datepicker-month']"/>
+	<element name="Riskpage-SelectDate-Date" locator="//a[contains(@class,'ui-state-default') and (text()='date')]"/>
+	<element name="Riskpage-SelectDate-next" locator="//a[@class='ui-datepicker-next ui-corner-all']"/>
+	<element name="Riskpage-SelectDate-previous" locator="//a[@class='ui-datepicker-prev ui-corner-all']"/>
+	
+	
+	
+
+</elements>
