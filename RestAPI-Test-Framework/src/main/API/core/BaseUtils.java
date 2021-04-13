@@ -32,6 +32,7 @@ import com.relevantcodes.extentreports.ExtentReports;
 import com.relevantcodes.extentreports.ExtentTest;
 import com.relevantcodes.extentreports.LogStatus;
 
+import core.BaseUtils.common;
 import io.restassured.path.json.JsonPath;
 
 /**
@@ -153,6 +154,7 @@ public class BaseUtils {
 		 */
 
 		public static void setExtentTest(String testName) {
+			setMethodName(testName);
 			test = extentreport.startTest(testName);
 			test.log(LogStatus.INFO, "Setting log report");
 			test.log(LogStatus.INFO, "Starting Test-" + testName);
@@ -160,6 +162,7 @@ public class BaseUtils {
 		}
 
 		/**
+		 * Returns an instance of ExtentTest
 		 * 
 		 * @return extentTest
 		 */
@@ -175,6 +178,26 @@ public class BaseUtils {
 
 		public static void logInfo(String log) {
 			test.log(LogStatus.INFO, log);
+		}
+
+		/**
+		 * CleanUp after Successful run of a testcase
+		 */
+		public static void cleanUpOnSuccess() {
+			test.log(LogStatus.PASS, "Test Passed Successfully");
+			BaseUtils.common.getExtentReport().endTest(test);
+			BaseUtils.common.getExtentReport().flush();
+
+		}
+
+		/**
+		 * CleanUp after Testcase fails
+		 */
+		public static void cleanUpOnFailure() {
+			test.log(LogStatus.FAIL, "Test Failed ");
+			BaseUtils.common.getExtentReport().endTest(test);
+			BaseUtils.common.getExtentReport().flush();
+
 		}
 
 	}
@@ -194,7 +217,8 @@ public class BaseUtils {
 
 			// READING THE PATH OF LOCATORS FILE FROM MODULE LOCATOR FILE
 			String locatorsFileLocation = ProjectProperties.readFromGlobalConfigFile("locators");
-			File file = new File(System.getProperty("user.dir") + locatorsFileLocation + moduleName + ".xml");
+			File file = new File(
+					System.getProperty("user.dir") + locatorsFileLocation + moduleName + "//" + moduleName + ".xml");
 
 			DocumentBuilderFactory documentFactory = DocumentBuilderFactory.newInstance();
 			try {
@@ -291,13 +315,11 @@ public class BaseUtils {
 					XSSFCell Cell = (XSSFCell) eachRow.getCell(4); // GET CELL WHICH HAS METHOD NAME
 					XSSFCell variableCell = (XSSFCell) eachRow.getCell(5);// GET CELL WHICH HAS VARIABLE NAME
 					XSSFCell variableValueCell = (XSSFCell) eachRow.getCell(6);// GET CELL WHICH HAS VARIABLE VALUE
-
 					// The value is fetched only if the current method name and variable name
 					// matches the value in the cell
 					if (Cell.getStringCellValue().equals(methodName)
 							&& variableCell.getStringCellValue().equals(testVariable)) {
 						common.logInfo("LookUp for testdata -" + testVariable);
-
 						if (variableValueCell.getCellType() == CellType.STRING) {
 							common.logInfo("LookUp for testdata " + testVariable + " successful.value = "
 									+ variableValueCell.getStringCellValue());
@@ -326,8 +348,9 @@ public class BaseUtils {
 		}
 
 		/**
-		 * To fetch the Global Variables  from the Excelfile .PLEASE REFER THE GlOBALVARIABLEs SHEET in Testdata FILE
-		 * THE COLUMN VALUE OF VARIABLENAME,VARIABLE VALUE
+		 * To fetch the Global Variables from the Excelfile .PLEASE REFER THE
+		 * GlOBALVARIABLEs SHEET in Testdata FILE THE COLUMN VALUE OF
+		 * VARIABLENAME,VARIABLE VALUE
 		 * 
 		 * @param testVariable
 		 * @return testdata for the specific value passed
@@ -395,7 +418,9 @@ public class BaseUtils {
 	}
 
 	/**
-	 * Takes in a json response and returns the value to be extracted from the response
+	 * Takes in a json response and returns the value to be extracted from the
+	 * response
+	 * 
 	 * @param response
 	 * @param valueToBeExtracted
 	 * @return

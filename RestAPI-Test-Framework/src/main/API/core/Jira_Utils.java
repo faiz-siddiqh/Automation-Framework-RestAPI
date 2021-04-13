@@ -21,27 +21,39 @@ public class Jira_Utils {
 	}
 
 	public void createSession() {
-		String baseUri = BaseUtils.ProjectProperties.readProjectVariables("BaseURI");
-		// String baseUri = BaseUtils.testData.getGlobalVariablesTestdata("BaseURI");
-		String statusCode = BaseUtils.ProjectProperties.readProjectVariables("sessionStatusCode");
-		// String
-		// statusCode=BaseUtils.locators.getLocator("Jira-CreateSession-StatusCode");
+		try {
+			BaseUtils.common.setExtentTest("Create Jira Session");
 
-		String headerName = BaseUtils.locators.getLocator("Header-Name");
-		String headerValue = BaseUtils.locators.getLocator("Header-Value");
-		String postResource = BaseUtils.locators.getLocator("Jira-CreateSession-post");
-		BaseUtils.common.logInfo("Creating a session");
-		RestAssured.baseURI = baseUri;
-		// relaxedHTTPSValidation() --validating that the site is https
-		given().relaxedHTTPSValidation().header(headerName, headerValue).body(getJiraCreateSessionBody())
-				.filter(session).when().post(postResource).then().assertThat().statusCode(Integer.parseInt(statusCode));
-		BaseUtils.common.logInfo("Session successfully created");
+			String baseUri = BaseUtils.ProjectProperties.readProjectVariables("BaseURI");
+			// String baseUri = BaseUtils.testData.getGlobalVariablesTestdata("BaseURI");
+			String statusCode = BaseUtils.ProjectProperties.readProjectVariables("sessionStatusCode");
+			// String
+			// statusCode=BaseUtils.locators.getLocator("Jira-CreateSession-StatusCode");
+
+			String headerName = BaseUtils.locators.getLocator("Header-Name");
+			String headerValue = BaseUtils.locators.getLocator("Header-Value");
+			String postResource = BaseUtils.locators.getLocator("Jira-CreateSession-post");
+			BaseUtils.common.logInfo("Creating a session");
+			RestAssured.baseURI = baseUri;
+			// relaxedHTTPSValidation() --validating that the site is https
+			given().relaxedHTTPSValidation().header(headerName, headerValue).body(getJiraCreateSessionBody())
+					.filter(session).when().post(postResource).then().assertThat()
+					.statusCode(Integer.parseInt(statusCode));
+			BaseUtils.common.logInfo("Session successfully created");
+
+		} catch (Exception e) {
+			BaseUtils.common.logInfo("Session initiation failed");
+			BaseUtils.common.cleanUpOnFailure();
+		} finally {
+			BaseUtils.common.cleanUpOnSuccess();
+		}
+
 	}
 
 	public static String getJiraCreateSessionBody() {
 		String userName = BaseUtils.testData.getGlobalVariablesTestdata("Username");
 		String password = BaseUtils.testData.getGlobalVariablesTestdata("Password");
-
+		BaseUtils.common.logInfo("fetching body of Payload");
 		return "{ \r\n" + "    \"username\": \"" + userName + "\",\r\n" + "    \"password\": \"" + password + "\" \r\n"
 				+ "}";
 	}
@@ -52,7 +64,7 @@ public class Jira_Utils {
 		String summary = BaseUtils.testData.getTestData("summary");
 		String description = BaseUtils.testData.getTestData("description");
 		String issueType = BaseUtils.testData.getTestData("issue-Type");
-
+		BaseUtils.common.logInfo("fetching body of Payload");
 		return "{\r\n" + "    \"fields\": {\r\n" + "        \"project\": {\r\n" + "            \"key\": \"" + projectKey
 				+ "\"\r\n" + "        },\r\n" + "        \"summary\": \"" + summary + "\",\r\n"
 				+ "        \"description\": \"" + description + "\",\r\n" + "        \"issuetype\": {\r\n"
@@ -78,27 +90,22 @@ public class Jira_Utils {
 
 	public String getAddAssigneeBody() {
 		String assignee = BaseUtils.testData.getTestData("Assignee");
-
+		BaseUtils.common.logInfo("fetching body of Payload");
 		return "{\r\n" + "    \"name\": \"" + assignee + "\"\r\n" + "}";
 	}
 
 	public String getCreateCommentBody() {
 		String comment = BaseUtils.testData.getTestData("comment");
-
+		BaseUtils.common.logInfo("fetching body of Payload");
 		return "{\r\n" + "    \"body\": \"" + comment + "\",\r\n" + "    \"visibility\": {\r\n"
 				+ "        \"type\": \"role\",\r\n" + "        \"value\": \"Administrators\"\r\n" + "    }\r\n" + "}";
 	}
 
 	public String getUpdateCommentBody() {
 		String updatedComment = BaseUtils.testData.getTestData("comment");
-		
-		return "{\r\n"
-				+ "    \"body\": \"\"" + updatedComment + "\"\",\r\n"
-				+ "    \"visibility\": {\r\n"
-				+ "        \"type\": \"role\",\r\n"
-				+ "        \"value\": \"Administrators\"\r\n"
-				+ "    }\r\n"
-				+ "}";
+		BaseUtils.common.logInfo("fetching body of Payload");
+		return "{\r\n" + "    \"body\": \"" + updatedComment + "\",\r\n" + "    \"visibility\": {\r\n"
+				+ "        \"type\": \"role\",\r\n" + "        \"value\": \"Administrators\"\r\n" + "    }\r\n" + "}";
 	}
 
 }
