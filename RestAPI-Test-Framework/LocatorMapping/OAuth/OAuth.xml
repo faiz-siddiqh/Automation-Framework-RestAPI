@@ -1,0 +1,13 @@
+<elements>
+
+
+	<!-- Gmail-Login  -->
+
+	<element name="OAuth-GmailLogin-Email" locator="input[type='email']"/>		
+	<element name="OAuth-GmailLogin-Password" locator="input[type='password']"/>
+	<element name="Header-Value-Attachments" locator="multipart/form-data"/>
+	
+
+	
+
+</elements>

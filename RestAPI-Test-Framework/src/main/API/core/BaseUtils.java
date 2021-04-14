@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.SortedSet;
 import java.util.TreeSet;
+import java.util.concurrent.TimeUnit;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -23,6 +24,18 @@ import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.xssf.usermodel.XSSFCell;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.chrome.ChromeOptions;
+import org.openqa.selenium.firefox.FirefoxDriver;
+import org.openqa.selenium.firefox.FirefoxOptions;
+import org.openqa.selenium.firefox.FirefoxProfile;
+import org.openqa.selenium.support.ui.ExpectedCondition;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
@@ -45,6 +58,7 @@ public class BaseUtils {
 	private static ExtentTest test;
 	public static String methodName;
 	public static String moduleName;
+	public static WebDriver driver;
 
 	public static class ProjectProperties {
 
@@ -113,6 +127,26 @@ public class BaseUtils {
 		 */
 		public static void setModuleName(String moduleName) {
 			BaseUtils.moduleName = moduleName;
+		}
+
+		/**
+		 * Navigate to the Url
+		 * 
+		 * @param url
+		 */
+		public static void navigateToUrl(String url) {
+			driver.get(url);
+			common.logInfo("Navigating to -" + url);
+
+		}
+
+		/**
+		 * Return an instance of WebDriver Object
+		 * 
+		 * @return WebDriver
+		 */
+		public static WebDriver getWebDriver() {
+			return driver;
 		}
 
 		/**
@@ -400,6 +434,68 @@ public class BaseUtils {
 	}
 
 	/**
+	 * SetUp the WEBDRIVER of the type specified in the config file . IMPLEMNETED
+	 * FOR CHROME AND FIREFOX BROWSERS ONLY AND FOR BOTH MAC OS AND WINDOWS
+	 */
+	public static void setUpDriver() {
+		// Load the properties file using this method which contains baseURL and
+		// WebDriverType
+		String driverLocation;
+		common.logInfo("Setting Up WebDriver");
+		String driverName = ProjectProperties.readFromGlobalConfigFile("driver");
+		// String baseURL = projectDetails.getProperty("baseURL");
+		common.logInfo("WebDriver chosen =" + driverName);
+
+		if (driverName.equalsIgnoreCase("Chrome")) {
+			// Set System Property to instantiate ChromeDriver with the path of
+			// chromedriver.
+
+			driverLocation = ProjectProperties.readFromGlobalConfigFile("chromedriver");
+			if (System.getProperty("os.name").startsWith("Windows")) {// the path varies for windows and Mac
+				System.setProperty("webdriver.chrome.driver", System.getProperty("user.dir") + driverLocation);
+			} else {
+				System.setProperty("webdriver.chrome.driver",
+						System.getProperty("user.dir") + driverLocation.replaceAll(".exe", ""));
+			}
+			// Set Options using for chrome using the below commented line
+
+			ChromeOptions options = new ChromeOptions();
+			// options.addArguments("--headless");
+			driver = new ChromeDriver(options);
+			common.logInfo("Launching Chrome");
+
+		} else if (driverName.equalsIgnoreCase("FireFox")) {
+			// Set System Property to instantiate ChromeDriver with the path of
+			// firefoxdriver.
+			driverLocation = ProjectProperties.readFromGlobalConfigFile("firefoxdriver");
+
+			if (System.getProperty("os.name").startsWith("Windows")) {// the path varies for windows and Mac
+				System.setProperty("webdriver.firefox.driver", System.getProperty("user.dir") + driverLocation);
+			} else {
+				System.setProperty("webdriver.firefox.driver",
+						System.getProperty("user.dir") + driverLocation.replaceAll(".exe", ""));
+			}
+
+			// Set Options using for Firefox
+
+			org.openqa.selenium.firefox.ProfilesIni profile = new org.openqa.selenium.firefox.ProfilesIni();
+//			FirefoxProfile Automationprofile = profile.getProfile("Automation");// Create a profile with Automation in
+//																				// Firefox on
+//																				// your machine and login your cognizant
+//																				// credentials
+			FirefoxOptions options = new FirefoxOptions();
+//			options.setProfile(Automationprofile);
+			driver = new FirefoxDriver(options);
+			common.logInfo("Launching Firefox");
+		}
+
+		driver.manage().window().maximize();
+		driver.manage().timeouts().implicitlyWait(3, TimeUnit.SECONDS);
+		common.logInfo("Maximizing the window");
+
+	}
+
+	/**
 	 * Initial SETUP of the module -before class/suite .
 	 * 
 	 * @throws SAXException
@@ -430,6 +526,156 @@ public class BaseUtils {
 		JsonPath jp = new JsonPath(response);// for parsing json
 		String value = jp.get(valueToBeExtracted);
 		return value;
+	}
+
+	/**
+	 * Wait for the page to load completely
+	 */
+	public static void waitForThePageToLoad() {
+		try {
+			WebDriverWait wait = new WebDriverWait(driver, 30);
+
+			wait.until(new ExpectedCondition<Boolean>() {
+				public Boolean apply(WebDriver driver) {
+					common.logInfo("Waiting for page to Load Completely.");
+					return ((JavascriptExecutor) driver).executeScript("return document.readyState").equals("complete");
+				}
+			});
+			// driver.manage().timeouts().pageLoadTimeout(25, TimeUnit.SECONDS);
+
+		} catch (Exception e) {
+			common.logInfo("WebPage took more time to Load.");
+			driver.quit();
+		}
+	}
+
+	/**
+	 * Find Element by locator and type
+	 * 
+	 * @param locator
+	 * @param type
+	 * @return WebElement
+	 */
+	public static WebElement getElement(String locator, String type) {
+		WebElement element = null;
+		type = type.toLowerCase();
+		common.logInfo("Lookup for Element-" + locator);
+		try {
+			if (type.equals("id")) {
+				element = driver.findElement(By.id(locator));
+			} else if (type.equals("xpath")) {
+				element = driver.findElement(By.xpath(locator));
+			} else if (type.equals("cssselector")) {
+				element = driver.findElement(By.cssSelector(locator));
+			} else if (type.equals("name")) {
+				element = driver.findElement(By.name(locator));
+			} else if (type.equals("classname")) {
+				element = driver.findElement(By.className(locator));
+			} else if (type.equals("tagname")) {
+				element = driver.findElement(By.tagName(locator));
+			} else if (type.equals("linktext")) {
+				element = driver.findElement(By.linkText(locator));
+			}
+		} catch (Exception e) {
+			common.logInfo("Element not found -" + locator);
+			common.logInfo("Locator not supported or check type");
+
+		}
+		common.logInfo("Lookup for Element successful");
+		return element;
+	}
+
+	/**
+	 * Click And Wait on specific WebElement and Log the message in extent report
+	 * 
+	 * @param element
+	 * @param message
+	 */
+	public static void clickAndWait(WebElement element, String message) {
+		try {
+			waitForTheElementToBeClickable(10, element);
+			element.click();
+			Thread.sleep(4000);
+			driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
+			common.logInfo(message);
+
+		} catch (Exception e) {
+			common.logInfo("Element not clickable");
+			common.logInfo(e.getMessage());
+
+		}
+
+	}
+
+	/**
+	 * wait for the element to be clickable.**
+	 * 
+	 * @param timeOutInSeconds
+	 * @param element
+	 */
+	public static void waitForTheElementToBeClickable(long timeOutInSeconds, WebElement element) {
+		try {
+			WebDriverWait wait = new WebDriverWait(driver, timeOutInSeconds);
+			wait.until(ExpectedConditions.elementToBeClickable(element));
+			common.logInfo("Waiting for the element to be clickable");
+		} catch (Exception e) {
+			common.logInfo("Element not clickable OR available");
+			common.logInfo(e.getMessage());
+		}
+	}
+
+	/**
+	 * Click And Wait on the WebElement
+	 * 
+	 * @param element
+	 */
+	public static void clickAndWait(WebElement element) {
+		try {
+			element.click();
+			Thread.sleep(3000);
+			common.logInfo("Click and Wait");
+			driver.manage().timeouts().implicitlyWait(5, TimeUnit.SECONDS);
+
+		} catch (Exception e) {
+			common.logInfo(e.getMessage());
+			driver.quit();
+//			extentreport.endTest(test);
+//			extentreport.flush();
+		}
+
+	}
+
+	/**
+	 * Click And Wait on the specified WebELement & Type and Wait the Keys .Log the
+	 * message to the report
+	 * 
+	 * @param element
+	 * @param keysToSend
+	 * @param message
+	 */
+	public static void clickAndTypeAndWait(WebElement element, String keysToSend, String message) {
+		try {
+			clickAndWait(element);
+			element.sendKeys(keysToSend);
+			common.logInfo(message);
+			Thread.sleep(3000);
+			driver.manage().timeouts().implicitlyWait(3, TimeUnit.SECONDS);
+		} catch (Exception e) {
+			common.logInfo(e.getMessage());
+		}
+	}
+
+	public static void waitToPerformAction(long timeToWait,String Message) {
+		try {
+			common.logInfo("Waiting for " + timeToWait + " Seconds");
+			Thread.sleep(timeToWait);
+			common.logInfo(Message);
+
+		} catch (InterruptedException e) {
+			common.logInfo("Exception/error during wait");
+			e.printStackTrace();
+		}
+
 	}
 
 	/**
