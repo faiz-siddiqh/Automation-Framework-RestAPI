@@ -49,7 +49,9 @@ import core.BaseUtils.common;
 import io.restassured.path.json.JsonPath;
 
 /**
- * This Base Class is created and maintained by-@author Faiz-Siddiqh
+ * This Base Class is created and maintained by-
+ * 
+ * @author Faiz-Siddiqh
  */
 public class BaseUtils {
 
@@ -97,7 +99,7 @@ public class BaseUtils {
 		 * To read a property from config properties file
 		 * 
 		 * @param propertyName
-		 * @return property value from golbal config value
+		 * @return property value from global config value
 		 */
 		public static String readFromGlobalConfigFile(String propertyName) {
 			loadPropertiesFile("//Resources//config.properties");
@@ -665,7 +667,7 @@ public class BaseUtils {
 		}
 	}
 
-	public static void waitToPerformAction(long timeToWait,String Message) {
+	public static void waitToPerformAction(long timeToWait, String Message) {
 		try {
 			common.logInfo("Waiting for " + timeToWait + " Seconds");
 			Thread.sleep(timeToWait);
