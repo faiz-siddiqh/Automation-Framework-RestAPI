@@ -29,10 +29,10 @@ public class AddPlace {
 		utils.setUp();
 	}
 
-	@Given("Add Place Payload")
-	public void add_place_payload() {
+	@Given("Add Place Payload with {string} {string} {string}")
+	public void add_place_payload(String name, String language, String place) {
 
-		reqSpec = given().spec(utils.getRequestSpec()).body(payload.addPlacePayLoad("faiz", "hidnad", "dada"));
+		reqSpec = given().spec(utils.getRequestSpec()).body(payload.addPlacePayLoad(name, language, place));
 
 	}
 

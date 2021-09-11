@@ -12,11 +12,11 @@ Multiparts:		<none>
 Body:
 {
     "accuracy": 50.0,
-    "name": "faiz",
+    "name": "Kapoor",
     "phone_number": "(+91) 983 893 3937",
-    "address": "dada",
+    "address": "Calcutta",
     "website": "www.google.com",
-    "language": "hidnad",
+    "language": "English",
     "location": {
         "lat": -38.383494,
         "lng": 33.427362
@@ -27,17 +27,17 @@ Body:
     ]
 }
 HTTP/1.1 200 OK
-Date: Sat, 11 Sep 2021 12:08:49 GMT
+Date: Sat, 11 Sep 2021 15:26:35 GMT
 Server: Apache/2.4.18 (Ubuntu)
 Access-Control-Allow-Origin: *
 Access-Control-Allow-Methods: POST
 Access-Control-Max-Age: 3600
 Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With
-Content-Length: 516
+Content-Length: 521
 Keep-Alive: timeout=5, max=100
 Connection: Keep-Alive
 Content-Type: application/json;charset=UTF-8
 
 <br />
-<b>Notice</b>:  You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 's Stop','dada','hidnad','2021-09-11 12:08:49','(+91) 983 893 3937')' at line 1 in <b>/var/www/maps/api/place/req_files/DBController.php</b> on line <b>29</b><br />
-{"status":"OK","place_id":"54fb844d526485ea61954d2c69444005","scope":"APP","reference":"95bb6c42868995aefff73800c260039495bb6c42868995aefff73800c2600394","id":"95bb6c42868995aefff73800c2600394"}
+<b>Notice</b>:  You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 's Stop','Calcutta','English','2021-09-11 15:26:35','(+91) 983 893 3937')' at line 1 in <b>/var/www/maps/api/place/req_files/DBController.php</b> on line <b>29</b><br />
+{"status":"OK","place_id":"708c695941a257981b3711807b9a6ee2","scope":"APP","reference":"480d26ce77cd7de2b526042027614dd3480d26ce77cd7de2b526042027614dd3","id":"480d26ce77cd7de2b526042027614dd3"}
