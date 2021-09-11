@@ -43,5 +43,3 @@ public class Maps_Utils {
 	}
 
 }
-
-

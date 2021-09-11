@@ -10,10 +10,12 @@ import io.cucumber.java.Before;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
+import io.restassured.parsing.Parser;
 import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
 import io.restassured.specification.ResponseSpecification;
 import payloads.Maps_Payload;
+import pojo.AddPlaceResponse;
 import resources.APIResources;
 
 public class AddPlace {
@@ -22,6 +24,7 @@ public class AddPlace {
 	Maps_Payload payload = new Maps_Payload();
 	RequestSpecification reqSpec;
 	ResponseSpecification resSpec;
+	AddPlaceResponse response;
 	Response res;
 
 	@Before
@@ -46,10 +49,13 @@ public class AddPlace {
 	@Then("Then the response must be sucessful")
 	public void then_the_response_must_be_sucessful() {
 		res.then().assertThat().spec(utils.getResponseSpec());
+		response = res.as(AddPlaceResponse.class);
+
 	}
 
 	@Then("Status Code must be {string}")
 	public void status_code_must_be(String string) {
+		assertEquals(response.getStatus(), "OK");
 		assertEquals(res.getStatusCode(), Integer.parseInt(string));
 	}
 
