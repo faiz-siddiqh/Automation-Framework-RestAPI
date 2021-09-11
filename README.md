@@ -1,8 +1,7 @@
 # Automation-Framework-RestAPI
 
 This Repository is for RESTAPI Testing using RestAssured.
-It has JiraAPI testing and OAuth2.0 Authetication/Validation Testing .
-Google Maps API testing with POJO classes is yet to be Updated.
+It has JiraAPI testing and OAuth2.0 Authetication/Validation Testing ,Google Maps API with cucumber framework .
 
 ## Installation
 
@@ -27,4 +26,4 @@ A lot of hard work,Planning has been put in for this development.I would love to
 
 Kfasid@protonmail.com / fasid@tutanota.com
 
-Connect me  in LinkedIn - http://www.linkedin.com/in/faiz-ahmed-siddiqh-k-15a050184
+Connect with me in LinkedIn - http://www.linkedin.com/in/faiz-ahmed-siddiqh-k-15a050184
