@@ -1,67 +1,47 @@
 package core;
 
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.PrintStream;
+
 import io.restassured.RestAssured;
-import static io.restassured.RestAssured.given;
+import io.restassured.builder.RequestSpecBuilder;
+import io.restassured.builder.ResponseSpecBuilder;
+import io.restassured.filter.log.RequestLoggingFilter;
+import io.restassured.filter.log.ResponseLoggingFilter;
 import io.restassured.filter.session.SessionFilter;
+import io.restassured.http.ContentType;
+import io.restassured.specification.RequestSpecification;
+import io.restassured.specification.ResponseSpecification;
 
 public class Maps_Utils {
 
 	public static SessionFilter session = new SessionFilter();
 
 	public void setUp() {
-		BaseUtils.setUp("Maps");
-		createSession();
+		ApiUtils.setUp("Maps");
+
 	}
 
-	public void createSession() {
+	public RequestSpecification getRequestSpec() {
+		RestAssured.baseURI = "https://rahulshettyacademy.com/";
+		PrintStream log = null;
 		try {
-			BaseUtils.common.setExtentTest("Create Jira Session");
-
-			String baseUri = BaseUtils.ProjectProperties.readProjectVariables("BaseURI");
-			// String baseUri = BaseUtils.testData.getGlobalVariablesTestdata("BaseURI");
-			String statusCode = BaseUtils.ProjectProperties.readProjectVariables("sessionStatusCode");
-			// String
-			// statusCode=BaseUtils.locators.getLocator("Jira-CreateSession-StatusCode");
-
-			String headerName = BaseUtils.locators.getLocator("Header-Name");
-			String headerValue = BaseUtils.locators.getLocator("Header-Value");
-			String postResource = BaseUtils.locators.getLocator("Jira-CreateSession-post");
-			BaseUtils.common.logInfo("Creating a session");
-			RestAssured.baseURI = baseUri;
-			// relaxedHTTPSValidation() --validating that the site is https
-			given().relaxedHTTPSValidation().header(headerName, headerValue).body(getJiraCreateSessionBody())
-					.filter(session).when().post(postResource).then().assertThat()
-					.statusCode(Integer.parseInt(statusCode));
-			BaseUtils.common.logInfo("Session successfully created");
-
-		} catch (Exception e) {
-			BaseUtils.common.logInfo("Session initiation failed");
-			BaseUtils.common.cleanUpOnFailure();
-		} finally {
-			BaseUtils.common.cleanUpOnSuccess();
+			log = new PrintStream(new FileOutputStream("logs.txt"));
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
 		}
+		return new RequestSpecBuilder().setBaseUri("https://rahulshettyacademy.com/").setContentType(ContentType.JSON)
+				.addQueryParam("Key", "qaclick123").addFilter(RequestLoggingFilter.logRequestTo(log))
+				.addFilter(ResponseLoggingFilter.logResponseTo(log)).build();
 
 	}
 
-	public static String getJiraCreateSessionBody() {
-		String userName = BaseUtils.testData.getGlobalVariablesTestdata("Username");
-		String password = BaseUtils.testData.getGlobalVariablesTestdata("Password");
-		BaseUtils.common.logInfo("fetching body of Payload");
-		return "{ \r\n" + "    \"username\": \"" + userName + "\",\r\n" + "    \"password\": \"" + password + "\" \r\n"
-				+ "}";
-	}
+	public ResponseSpecification getResponseSpec() {
 
-	public String getCreateIssueBody() {
-
-		String projectKey = BaseUtils.testData.getTestData("Key");
-		String summary = BaseUtils.testData.getTestData("summary");
-		String description = BaseUtils.testData.getTestData("description");
-		String issueType = BaseUtils.testData.getTestData("issue-Type");
-		BaseUtils.common.logInfo("fetching body of Payload");
-		return "{\r\n" + "    \"fields\": {\r\n" + "        \"project\": {\r\n" + "            \"key\": \"" + projectKey
-				+ "\"\r\n" + "        },\r\n" + "        \"summary\": \"" + summary + "\",\r\n"
-				+ "        \"description\": \"" + description + "\",\r\n" + "        \"issuetype\": {\r\n"
-				+ "         \"name\": \"" + issueType + "\"\r\n" + "        }\r\n" + "    }   \r\n" + "}";
+		return new ResponseSpecBuilder().expectStatusCode(200).expectContentType(ContentType.JSON).build();
 	}
 
 }
+
+
